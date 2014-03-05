@@ -1,0 +1,9 @@
+{application, timing, [
+  {description, "timing library"},
+  {vsn, "0.1"},
+  {applications, [
+    kernel,
+    stdlib
+  ]},
+  {env, []}
+]}.
