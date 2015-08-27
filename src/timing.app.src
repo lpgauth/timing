@@ -1,6 +1,6 @@
 {application, timing, [
   {description, "timing library"},
-  {vsn, "0.1"},
+  {vsn, "0.1.0"},
   {applications, [
     kernel,
     stdlib

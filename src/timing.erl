@@ -11,17 +11,25 @@
 -define(P, 20).
 
 %% public
+-spec function(fun()) -> [tuple()].
+
 function(Fun) ->
     function(Fun, ?N).
+
+-spec function(fun(), pos_integer()) -> [tuple()].
 
 function(Fun, N) ->
     function(Fun, N, ?P).
 
+-spec function(fun(), pos_integer(), pos_integer()) -> [tuple()].
+
 function(Fun, N, P) ->
     function(Fun, N, P, []).
 
+-spec function(fun(), pos_integer(), pos_integer(), [proc_lib:spawn_option()]) -> [tuple()].
+
 function(Fun, N, P, Opts) ->
-    I = trunc(N/P),
+    I = trunc(N / P),
     function_spawn_loop(self(), Fun, I, P, Opts),
     Samples = lists:append(receive_loop(P)),
     bear:get_statistics(Samples).
