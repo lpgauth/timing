@@ -54,4 +54,9 @@ function_time(Fun) ->
 receive_loop(0) ->
     [];
 receive_loop(N) ->
-    [receive X -> X end | receive_loop(N - 1)].
+    receive
+        {'EXIT', _Pid, normal} ->
+            receive_loop(N);
+        X ->
+            [X | receive_loop(N - 1)]
+    end.
