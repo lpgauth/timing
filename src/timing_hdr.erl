@@ -29,8 +29,9 @@ run(TimingFun, Opts) ->
     {ok, Hdr} = hdr_histogram:open(Iterations2, 3),
     Timestamp = os:timestamp(),
     spawn_loop(Concurrency, TimingFun, N, self(), SpawnOpts),
-    {ok, Errors} = receive_timings(Concurrency, Hdr, 0),
+    {ok, Timings} = receive_timings(Concurrency, []),
     TotalTime = timer:now_diff(os:timestamp(), Timestamp),
+    {ok, Errors} = timings_loop(lists:flatten(Timings), Hdr, 0),
     hdr_histogram:log(Hdr, classic, Output),
 
     Result = [
@@ -69,15 +70,14 @@ lookup(Key, List, Default) ->
         {_, Value} -> Value
     end.
 
-receive_timings(0, _Hdr, Errors) ->
-    {ok, Errors};
-receive_timings(C, Hdr, Errors) ->
+receive_timings(0, Timings) ->
+    {ok, Timings};
+receive_timings(C, Timings) ->
     receive
         {'EXIT', _Pid, normal} ->
-            receive_timings(C, Hdr, Errors);
-        {timings, Timings} ->
-            {ok, Errors2} = timings_loop(Timings, Hdr, Errors),
-            receive_timings(C - 1, Hdr, Errors2)
+            receive_timings(C, Timings);
+        {timings, Timings2} ->
+            receive_timings(C - 1, [Timings2 | Timings])
     end.
 
 spawn_loop(0, _Fun, _N, _Pid, _SpawnOpts) ->
