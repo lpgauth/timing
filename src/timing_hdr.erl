@@ -56,10 +56,12 @@ fun_loop(Fun, N) ->
     [fun_time(Fun) | fun_loop(Fun, N - 1)].
 
 fun_time(Fun) ->
-    Timestamp = os:timestamp(),
+    T1 = erlang:monotonic_time(),
     case Fun() of
         ok ->
-            {ok, timer:now_diff(os:timestamp(), Timestamp)};
+            T2 = erlang:monotonic_time(),
+            TDiff = erlang:convert_time_unit(T2 - T1, native, microsecond),
+            {ok, TDiff};
         {error, _} = Error ->
             Error
     end.

@@ -47,9 +47,8 @@ function_spawn_loop(Pid, Fun, I, P, Opts) ->
     function_spawn_loop(Pid, Fun, I, P - 1, Opts).
 
 function_time(Fun) ->
-    Timestamp = os:timestamp(),
-    Fun(),
-    timer:now_diff(os:timestamp(), Timestamp).
+    {TDiff, _Value} = timer:tc(Fun),
+    TDiff.
 
 receive_loop(0) ->
     [];
