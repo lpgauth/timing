@@ -7,7 +7,6 @@
 ]).
 
 %% public
-
 -spec run(timing_fun()) ->
     result().
 
@@ -43,7 +42,10 @@ run(TimingFun, Opts) ->
         {total_time, TotalTime},
         {mean, hdr_histogram:mean(Hdr)},
         {median, hdr_histogram:median(Hdr)},
-        {stddev, hdr_histogram:stddev(Hdr)}
+        {stddev, hdr_histogram:stddev(Hdr)},
+        {p95, hdr_histogram:percentile(Hdr, 95.0)},
+        {p99, hdr_histogram:percentile(Hdr, 99.0)},
+        {p999, hdr_histogram:percentile(Hdr, 99.9)}
     ],
 
     hdr_histogram:close(Hdr),
