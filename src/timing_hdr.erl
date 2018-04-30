@@ -26,10 +26,11 @@ run(TimingFun, Opts) ->
     N = trunc(Iterations / Concurrency),
     Iterations2 = N * Concurrency,
     {ok, Hdr} = hdr_histogram:open(Iterations2, 3),
-    Timestamp = os:timestamp(),
+    T1 = erlang:monotonic_time(),
     spawn_loop(Concurrency, TimingFun, N, self(), SpawnOpts),
     {ok, Timings} = receive_timings(Concurrency, []),
-    TotalTime = timer:now_diff(os:timestamp(), Timestamp),
+    T2 = erlang:monotonic_time(),
+    TotalTime = erlang:convert_time_unit(T2 - T1, native, microsecond),
     {ok, Errors} = timings_loop(lists:flatten(Timings), Hdr, 0),
     hdr_histogram:log(Hdr, classic, Output),
 
